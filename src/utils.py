@@ -1,4 +1,3 @@
-
 import cv
 
 def main():
@@ -6,18 +5,16 @@ def main():
 	inputFile = '002002_002.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
-
 	cv.ShowImage("input", img)
 
 	outputImg = toBinary(img)
-
 	cv.ShowImage("output",outputImg)
 
 	cv.WaitKey(0)
 
 def toBinary(img):
 	# Create an image to store the output version on
-	result = cv.CreateImage(cv.GetSize(img), cv.IPL_DEPTH_8U, 1)
+	result = cv.CreateMat(img.rows, img.cols, cv.CV_8UC1)
 
 	# convert to grayscale
 	cv.CvtColor(img, result, cv.CV_RGB2GRAY)

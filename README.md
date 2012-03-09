@@ -27,4 +27,14 @@ So the file `001001_000.png` means: It's the __1st__ signature, which is signed 
 
 An example of a __forged__ signature would be `021001_000.png`. Which means person __021__ tried to forge person __001__'s signature.
 
+All forged examples are moved to `forged` directory in `data\forged` for simplicity.
 
+###Code
+
+All the codes can be found in `src` directory. These codes are meant to be a proof of concept, and are not ready for production.
+
+####State of the code
+
+All the things that I said above about what this project does, has not happended _yet_.
+
+As of march 2012 I'm trying to implement the recognition part of the project.

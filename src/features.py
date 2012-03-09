@@ -24,6 +24,7 @@ def basicGlobalFeatures(img):
 			if img[y,x] == 0:
 				T += 1
 	return (W,H,A,T)
+
 # This function returns a tuple containing
 # cicularity feature(Ci = A/C), and radius of the cirscle(Srad)
 # refer to the paper mentioned in README for more detailes
@@ -31,8 +32,9 @@ def basicGlobalFeatures(img):
 def circularityFeature(img):
 	(W, H) = cv.GetSize(img)
 	A = W*H
-	Ci = (math.pi * (W**2 + H**2)) / float(2 * W * H)
+	Ci = (math.pi * (W**2 + H**2)) / (4 * W * H)
 	Srad = math.sqrt(W**2 + H**2)/2.0
 	return (Ci, Srad)
+
 if __name__ == '__main__':
 	main()

@@ -6,13 +6,17 @@ def main():
 
 	# img = cv.LoadImageM(inputFolder+inputFile)
 	# cv.ShowImage("input", img)
-
 	# outputImg = toBinary(img)
 	# cv.ShowImage("output",outputImg)
-
 	# cv.WaitKey(0)
 
-	print meanSizeOfSamples(inputFolder)
+	(w, h) = meanSizeOfSamples(inputFolder)
+
+	img = cv.LoadImageM(inputFolder+inputFile)
+	cv.ShowImage("input", img)
+	outputImg = resizeImage(img, int(w), int(h))
+	cv.ShowImage("output",outputImg)
+	cv.WaitKey(0)
 
 def toBinary(img):
 	# Create an image to store the output version on
@@ -30,7 +34,7 @@ def toBinary(img):
 
 # This function returns a tuple
 # Containing mean width(mW) and height(mH) of some samples
-# (mW,mH) both are floats
+# (mW,mH) **both are floats**. If you want to use these for resizing be sure to convert to ints.
 # folder argument is the address to the folder containing all the
 # learning samples.
 # For sample naming convention see README
@@ -51,6 +55,22 @@ def meanSizeOfSamples(folder):
 	
 	(mW, mH) = (tW/l, tH/l)
 	return (mW, mH)
+
+# returns a CvMat containing the resized image
+def resizeImage(img, W,H):
+	"""
+	I like to mention OpenCV's annoyance here for a moment.
+	In python interface of OpenCV, CvSize is defined as a tupe: (width, height)
+	If you want to get the size of a CvMat you can call cv.GetSize(mat), which will return a CvSize(w,h)
+	But if you want to create a CvMat (from nothing) you should try cv.CreateMat.
+	Which takes 3 arguments, cols(height), rows(width), and elemType.
+	But what bothers me is the ordering of those arguments.
+	And the use of two different arguments instead of just one CvSize.
+	cv.CreateMat(height, width, cv.GetElemType(mat)). Which is annoying.
+	"""
+	result = cv.CreateMat(H, W, cv.GetElemType(img))
+	cv.Resize(img, result)
+	return result
 
 if __name__ == '__main__':
 	main()

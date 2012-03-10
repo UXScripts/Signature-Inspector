@@ -32,7 +32,7 @@ def basicGlobalFeatures(img):
 def circularityFeature(img):
 	(W, H) = cv.GetSize(img)
 	A = W*H
-	Ci = (math.pi * (W**2 + H**2)) / (4 * W * H)
+	Ci = (4 * W * H) / (math.pi * (W**2 + H**2))
 	Srad = math.sqrt(W**2 + H**2)/2.0
 	return (Ci, Srad)
 

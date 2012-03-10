@@ -20,7 +20,15 @@ def main():
 	# cv.ShowImage("output",outputImg)
 	# cv.WaitKey(0)
 
-	normalizationStep(inputFolder, outputFolder)
+	# normalizationStep(inputFolder, outputFolder)
+
+	img = cv.LoadImageM(outputFolder+inputFile)
+	cv.ShowImage("input", img)
+	outputImg = toBinary(img)
+	cv.ShowImage("binary",outputImg)
+	enhancedImage = enhanceImage(img)
+	cv.ShowImage("enhancedImage",enhancedImage)
+	cv.WaitKey(0)
 
 def toBinary(img):
 	# Create an image to store the output version on
@@ -76,6 +84,7 @@ def resizeImage(img, W,H):
 	cv.Resize(img, result)
 	return result
 
+# This function does the normalization steps
 def normalizationStep(inputFolder, outputFolder):
 	mW, mH = meanSizeOfSamples(inputFolder)
 	mW, mH = int(mW), int(mH)
@@ -88,6 +97,14 @@ def normalizationStep(inputFolder, outputFolder):
 		destAddr = parts[len(parts)-1]
 		print destAddr
 		cv.SaveImage(outputFolder + destAddr, img)
+
+# This function performs the image enhancement step on a CvMat input
+# returns a CvMat object.
+def enhanceImage(img):
+	W, H = cv.GetSize(img)
+	result = cv.CreateMat(H, W, cv.GetElemType(img))
+	cv.Smooth(img, result, smoothtype=cv.CV_BLUR, param1=3)
+	return result
 
 if __name__ == '__main__':
 	main()

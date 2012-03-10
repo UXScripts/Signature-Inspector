@@ -1,7 +1,9 @@
 import cv
+import glob
 
 def main():
 	inputFolder = '../data/'
+	outputFolder = '../data/normalized/'
 	inputFile = '002002_002.png'
 
 	# img = cv.LoadImageM(inputFolder+inputFile)
@@ -10,13 +12,15 @@ def main():
 	# cv.ShowImage("output",outputImg)
 	# cv.WaitKey(0)
 
-	(w, h) = meanSizeOfSamples(inputFolder)
+	# (w, h) = meanSizeOfSamples(inputFolder)
 
-	img = cv.LoadImageM(inputFolder+inputFile)
-	cv.ShowImage("input", img)
-	outputImg = resizeImage(img, int(w), int(h))
-	cv.ShowImage("output",outputImg)
-	cv.WaitKey(0)
+	# img = cv.LoadImageM(inputFolder+inputFile)
+	# cv.ShowImage("input", img)
+	# outputImg = resizeImage(img, int(w), int(h))
+	# cv.ShowImage("output",outputImg)
+	# cv.WaitKey(0)
+
+	normalizationStep(inputFolder, outputFolder)
 
 def toBinary(img):
 	# Create an image to store the output version on
@@ -39,7 +43,6 @@ def toBinary(img):
 # learning samples.
 # For sample naming convention see README
 def meanSizeOfSamples(folder):
-	import glob
 	files = glob.glob(folder + '*_*.png')
 
 	l = len(files)
@@ -68,9 +71,23 @@ def resizeImage(img, W,H):
 	And the use of two different arguments instead of just one CvSize.
 	cv.CreateMat(height, width, cv.GetElemType(mat)). Which is annoying.
 	"""
+
 	result = cv.CreateMat(H, W, cv.GetElemType(img))
 	cv.Resize(img, result)
 	return result
+
+def normalizationStep(inputFolder, outputFolder):
+	mW, mH = meanSizeOfSamples(inputFolder)
+	mW, mH = int(mW), int(mH)
+	imgAddrs = glob.glob(inputFolder + '*_*.png')
+	for address in imgAddrs:
+		img = cv.LoadImageM(address)
+		img = toBinary(img)
+		img = resizeImage(img, mW, mH)
+		parts = address.split('\\')
+		destAddr = parts[len(parts)-1]
+		print destAddr
+		cv.SaveImage(outputFolder + destAddr, img)
 
 if __name__ == '__main__':
 	main()

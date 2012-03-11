@@ -4,7 +4,7 @@ import math
 
 def main():
 	inputFolder = '../data/'
-	inputFile = '001001_000.png'
+	inputFile = '011011_000.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)
@@ -21,7 +21,11 @@ def main():
 	Vc = verticalCenter(BiImg)
 	Hc = horizontalCenter(BiImg)
 
-	cv.Circle(BiImg, (Hc, Vc), 2, cv.RGB(200,0,0), thickness=2)
+	# cv.Circle(BiImg, (Hc, Vc), 2, cv.RGB(200,0,0), thickness=2)
+
+	(the_y, the_value) = globalBaseLine(BiImg)
+
+	cv.Line(BiImg, (0, the_y), (cv.GetSize(img)[0]-1, the_y), cv.RGB(200,0,0))
 
 	cv.ShowImage("input", img)
 	cv.ShowImage("Biinput", BiImg)
@@ -97,6 +101,7 @@ def verticalCenter(img):
 	result = total/T
 	return int(result)
 
+# Just like verical center
 def horizontalCenter(img):
 	(W, H, A, T) = basicGlobalFeatures(img)
 	Ph = horizontalProjection(img)
@@ -107,6 +112,20 @@ def horizontalCenter(img):
 	
 	result = total/T
 	return int(result)
+
+
+def globalBaseLine(img):
+	(W, H) = cv.GetSize(img)
+	Pv = verticalProjection(img)
+	the_y = 0
+	the_value = 0
+
+	for y in range(H):
+		if Pv[y] > the_value:
+			the_value = Pv[y]
+			the_y = y
+	
+	return (the_y, the_value)
 
 if __name__ == '__main__':
 	main()

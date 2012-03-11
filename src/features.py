@@ -4,20 +4,27 @@ import math
 
 def main():
 	inputFolder = '../data/'
-	inputFile = '002002_002.png'
+	inputFile = '001001_000.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)
+	
+
+	# Pv = verticalProjection(BiImg)
+	# print "Vertical Projection"
+	# print Pv
+
+	# Ph = horizontalProjection(BiImg)
+	# print "Horizontal Projection"
+	# print Ph
+
+	Vc = verticalCenter(BiImg)
+	Hc = horizontalCenter(BiImg)
+
+	cv.Circle(BiImg, (Hc, Vc), 2, cv.RGB(200,0,0), thickness=2)
+
 	cv.ShowImage("input", img)
 	cv.ShowImage("Biinput", BiImg)
-
-	Pv = verticalProjection(BiImg)
-	print "Vertical Projection"
-	print Pv
-
-	Ph = horizontalProjection(BiImg)
-	print "Horizontal Projection"
-	print Ph
 	cv.WaitKey(0)
 
 # This functions returns a tuple contaning 
@@ -76,6 +83,30 @@ def horizontalProjection(img):
 		Ph.append(tB)
 	
 	return Ph
+
+# This function calculates the vertical center of gravity of an image
+# returns an int
+def verticalCenter(img):
+	(W, H, A, T) = basicGlobalFeatures(img)
+	Pv = verticalProjection(img)
+
+	total = 0
+	for y in range(H):
+		total += y * Pv[y]
+	
+	result = total/T
+	return int(result)
+
+def horizontalCenter(img):
+	(W, H, A, T) = basicGlobalFeatures(img)
+	Ph = horizontalProjection(img)
+
+	total = 0
+	for x in range(W):
+		total += x * Ph[x]
+	
+	result = total/T
+	return int(result)
 
 if __name__ == '__main__':
 	main()

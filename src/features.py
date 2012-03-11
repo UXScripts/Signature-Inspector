@@ -4,7 +4,7 @@ import math
 
 def main():
 	inputFolder = '../data/'
-	inputFile = '011011_000.png'
+	inputFile = '001001_001.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)
@@ -22,10 +22,15 @@ def main():
 	Hc = horizontalCenter(BiImg)
 
 	# cv.Circle(BiImg, (Hc, Vc), 2, cv.RGB(200,0,0), thickness=2)
-
+	Pv = verticalProjection(BiImg)
 	(the_y, the_value) = globalBaseLine(BiImg)
+	UP = upperLimit(BiImg, (the_y, the_value), Pv)
+	LL = lowerLimit(BiImg, (the_y, the_value), Pv)
 
+	print LL, the_y, UP
 	cv.Line(BiImg, (0, the_y), (cv.GetSize(img)[0]-1, the_y), cv.RGB(200,0,0))
+	cv.Line(BiImg, (0, LL), (cv.GetSize(img)[0]-1, LL), cv.RGB(200,0,0))
+	cv.Line(BiImg, (0, UP), (cv.GetSize(img)[0]-1, UP), cv.RGB(200,0,0))
 
 	cv.ShowImage("input", img)
 	cv.ShowImage("Biinput", BiImg)
@@ -113,7 +118,9 @@ def horizontalCenter(img):
 	result = total/T
 	return int(result)
 
-
+# Returns a tuple containing the position of the global baseline (the_y) and 
+# the value of vertical projection on the point (the_value)
+# (the_y, the_value)
 def globalBaseLine(img):
 	(W, H) = cv.GetSize(img)
 	Pv = verticalProjection(img)
@@ -126,6 +133,35 @@ def globalBaseLine(img):
 			the_y = y
 	
 	return (the_y, the_value)
+
+def upperLimit(img, GBL, Pv):
+	BL, value = GBL
+	UL = 0
+	diff = 0
+	for y in range(BL):
+		smoothV = y * value / BL
+		tempDiff = abs(Pv[y] - smoothV)
+		if tempDiff > diff:
+			UL = y
+			diff = tempDiff
+	
+	return UL
+
+def lowerLimit(img, GBL, Pv):
+	BL, value = GBL
+	LL = 0
+	diff = 0
+
+	W,H = cv.GetSize(img)
+
+	for y in range(BL, H):
+		smoothV = value - (y * value / ((H-1) - BL))
+		tempDiff = abs(Pv[y] - smoothV)
+		if tempDiff > diff:
+			LL = y
+			diff = tempDiff
+	
+	return LL
 
 if __name__ == '__main__':
 	main()

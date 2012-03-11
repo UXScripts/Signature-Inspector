@@ -12,7 +12,9 @@ def main():
 	# cv.ShowImage("output",outputImg)
 	# cv.WaitKey(0)
 
-	# (w, h) = meanSizeOfSamples(inputFolder)
+	(w, h) = meanSizeOfSamples(inputFolder)
+
+	print int(w), int(h)
 
 	# img = cv.LoadImageM(inputFolder+inputFile)
 	# cv.ShowImage("input", img)

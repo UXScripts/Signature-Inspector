@@ -1,10 +1,11 @@
 import cv
 import utils
 import math
+import operator
 
 def main():
-	inputFolder = '../data/'
-	inputFile = '001001_004.png'
+	inputFolder = '../data/normalized/'
+	inputFile = '012012_000.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)
@@ -34,12 +35,16 @@ def main():
 
 	smooth = utils.enhanceImage(BiImg)
 	smoothb = utils.toBinary(smooth)
-	thin = thinning(smoothb)
+	thin = thinning(BiImg)
 
 	cv.ShowImage("input", img)
 	cv.ShowImage("Biinput", BiImg)
 	cv.ShowImage("smooth", smoothb)
 	cv.ShowImage("Thin", thin)
+
+	slant = slantFeature(BiImg)
+	sorted_slant = sorted(slant.iteritems(), key=operator.itemgetter(1))
+	print sorted_slant
 	cv.WaitKey(0)
 
 # This functions returns a tuple contaning 
@@ -236,6 +241,30 @@ def thinning(img):
 			img[y, x] = 255
 	
 	return img
+# Negatively Slanted(NS), Vertically Stalnted(VS), Positively Slanted(PS) and Horizontally Slanted (HS)
+# returns a dict {'NS': int, 'VS': int, 'PS': int, 'HS': int}
+def slantFeature(img):
+	W, H = cv.GetSize(img)
+	thinnedImage = thinning(img)
+	slant = {}
+	slant['NS'] = 0
+	slant['VS'] = 0
+	slant['PS'] = 0
+	slant['HS'] = 0
+
+	for y in range(1, H):
+		for x in range(1, W):
+			if img[y, x] == 0:
+				if img[y-1, x-1] == 0:
+					slant['NS'] += 1
+				if img[y, x-1] == 0:
+					slant['VS'] += 1
+				if img[y+1, x-1] == 0:
+					slant['PS'] += 1
+				if img[y, x+1] == 0:
+					slant['HS'] += 1
+
+	return slant
 
 if __name__ == '__main__':
 	main()

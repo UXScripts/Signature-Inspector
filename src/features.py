@@ -5,7 +5,7 @@ import operator
 
 def main():
 	inputFolder = '../data/normalized/'
-	inputFile = '005005_000.png'
+	inputFile = '012012_001.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)
@@ -252,8 +252,8 @@ def slantFeature(img):
 	slant['PS'] = 0
 	slant['HS'] = 0
 
-	for y in range(1, H):
-		for x in range(1, W):
+	for y in range(1, H-1):
+		for x in range(1, W-1):
 			if img[y, x] == 0:
 				if img[y-1, x-1] == 0:
 					slant['NS'] += 1
@@ -261,7 +261,7 @@ def slantFeature(img):
 					slant['VS'] += 1
 				if img[y+1, x-1] == 0:
 					slant['PS'] += 1
-				if img[y, x+1] == 0:
+				if img[y+1, x] == 0:
 					slant['HS'] += 1
 
 	return slant

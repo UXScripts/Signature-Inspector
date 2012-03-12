@@ -198,6 +198,7 @@ def connectivity(img, y, x):
 	return result
 
 # TODO: do thinning better
+# Only used in slant feature
 def thinning(img):
 	img = cv.CloneMat(img)
 	# this contains a list of CvPoints that are marked by sub iterations to be deleted

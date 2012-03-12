@@ -5,7 +5,7 @@ import operator
 
 def main():
 	inputFolder = '../data/normalized/'
-	inputFile = '012012_000.png'
+	inputFile = '005005_000.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)

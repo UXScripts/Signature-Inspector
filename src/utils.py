@@ -71,17 +71,6 @@ def meanSizeOfSamples(folder):
 
 # returns a CvMat containing the resized image
 def resizeImage(img, W,H):
-	"""
-	I like to mention OpenCV's annoyance here for a moment.
-	In python interface of OpenCV, CvSize is defined as a tupe: (width, height)
-	If you want to get the size of a CvMat you can call cv.GetSize(mat), which will return a CvSize(w,h)
-	But if you want to create a CvMat (from nothing) you should try cv.CreateMat.
-	Which takes 3 arguments, cols(height), rows(width), and elemType.
-	But what bothers me is the ordering of those arguments.
-	And the use of two different arguments instead of just one CvSize.
-	cv.CreateMat(height, width, cv.GetElemType(mat)). Which is annoying.
-	"""
-
 	result = cv.CreateMat(H, W, cv.GetElemType(img))
 	cv.Resize(img, result)
 	return result

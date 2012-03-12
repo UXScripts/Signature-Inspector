@@ -33,11 +33,13 @@ def main():
 	cv.WaitKey(0)
 
 def toBinary(img):
-	# Create an image to store the output version on
-	result = cv.CreateMat(img.rows, img.cols, cv.CV_8UC1)
-
 	# convert to grayscale
-	cv.CvtColor(img, result, cv.CV_RGB2GRAY)
+	if cv.GetElemType(img) == cv.CV_8UC3:
+		# Create an image to store the output version on
+		result = cv.CreateMat(img.rows, img.cols, cv.CV_8UC1)
+		cv.CvtColor(img, result, cv.CV_RGB2GRAY)
+	else:
+		result = cv.CloneMat(img)
 
 	# apply threshold
 	# TODO: Make use of better thresholding algorithms

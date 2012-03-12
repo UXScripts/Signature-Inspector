@@ -4,7 +4,7 @@ import math
 
 def main():
 	inputFolder = '../data/'
-	inputFile = '001001_001.png'
+	inputFile = '001001_004.png'
 
 	img = cv.LoadImageM(inputFolder+inputFile)
 	BiImg = utils.toBinary(img)
@@ -27,13 +27,19 @@ def main():
 	UP = upperLimit(BiImg, (the_y, the_value), Pv)
 	LL = lowerLimit(BiImg, (the_y, the_value), Pv)
 
-	print LL, the_y, UP
-	cv.Line(BiImg, (0, the_y), (cv.GetSize(img)[0]-1, the_y), cv.RGB(200,0,0))
-	cv.Line(BiImg, (0, LL), (cv.GetSize(img)[0]-1, LL), cv.RGB(200,0,0))
-	cv.Line(BiImg, (0, UP), (cv.GetSize(img)[0]-1, UP), cv.RGB(200,0,0))
+	# print LL, the_y, UP
+	# cv.Line(BiImg, (0, the_y), (cv.GetSize(img)[0]-1, the_y), cv.RGB(200,0,0))
+	# cv.Line(BiImg, (0, LL), (cv.GetSize(img)[0]-1, LL), cv.RGB(200,0,0))
+	# cv.Line(BiImg, (0, UP), (cv.GetSize(img)[0]-1, UP), cv.RGB(200,0,0))
+
+	smooth = utils.enhanceImage(BiImg)
+	smoothb = utils.toBinary(smooth)
+	thin = thinning(smoothb)
 
 	cv.ShowImage("input", img)
 	cv.ShowImage("Biinput", BiImg)
+	cv.ShowImage("smooth", smoothb)
+	cv.ShowImage("Thin", thin)
 	cv.WaitKey(0)
 
 # This functions returns a tuple contaning 
@@ -162,6 +168,74 @@ def lowerLimit(img, GBL, Pv):
 			diff = tempDiff
 	
 	return LL
+
+# finds connectivity number of a pixel in an image
+# returns the number as an int. or -1 in case of error or edge of image input
+# 0 <= y < H
+# 0 <= x < W
+# img[y,x]
+# y : row
+# x : col
+def connectivity(img, y, x):
+	result = 0
+	W, H = cv.GetSize(img)
+	if y < 1 or y >= H-1:
+		return -1
+	if x < 1 or x >= W-1:
+		return -1
+	
+	track = [img[y-1,x], img[y-1, x+1], img[y, x+1], img[y+1, x+1], img[y+1, x], img[y+1, x-1], img[y, x-1], img[y-1, x-1], img[y-1, x]]
+
+	for z in range(len(track)):
+		if track[z] == 255:
+			if z < len(track) - 2 and track[z+1] == 0:
+				result += 1
+	return result
+
+# TODO: do thinning better
+def thinning(img):
+	img = cv.CloneMat(img)
+	# this contains a list of CvPoints that are marked by sub iterations to be deleted
+	W, H = cv.GetSize(img)
+	i = 0
+	while i < 2:
+		i += 1
+		marked = []
+		# sub-iteration 1
+		for y in range(H):
+			for x in range(W):
+				if img[y, x] == 0:
+					if connectivity(img, y, x) == 1:
+						neighbors = [img[y-1,x], img[y-1, x+1], img[y, x+1], img[y+1, x+1], img[y+1, x], img[y+1, x-1], img[y, x-1], img[y-1, x-1]]
+						object_neighbors = 8 - int(sum(neighbors)/255)
+						if object_neighbors >= 2 and object_neighbors <= 6:
+							if sum([img[y-1, x], img[y, x+1], img[y+1, x]]) >= 255: #at least one background (255)
+								if sum([img[y, x+1], img[y+1, x], img[y, x-1]]) >= 255: #at leat one background (255)
+									marked.append((y, x))
+
+		if len(marked) == 0:
+			return img
+		for (y, x) in marked:
+			img[y, x] = 255
+		
+		# sub-iteration 2
+		marked = []
+		for y in range(H):
+			for x in range(W):
+				if img[y, x] == 0:
+					if connectivity(img, y, x) == 1:
+						neighbors = [img[y-1,x], img[y-1, x+1], img[y, x+1], img[y+1, x+1], img[y+1, x], img[y+1, x-1], img[y, x-1], img[y-1, x-1]]
+						object_neighbors = 8 - int(sum(neighbors)/255)
+						if object_neighbors >= 2 and object_neighbors <= 6:
+							if sum([img[y-1, x], img[y, x+1], img[y, x-1]]) >= 255: #at least one background (255)
+								if sum([img[y-1, x], img[y+1, x], img[y, x-1]]) >= 255: #at leat one background (255)
+									marked.append((y, x))
+		if len(marked) == 0:
+			return img
+		for (y, x) in marked:
+			img[y, x] = 255
+	
+	return img
 
 if __name__ == '__main__':
 	main()

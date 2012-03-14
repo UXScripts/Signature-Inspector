@@ -3,18 +3,20 @@ import features
 import cv
 import operator
 import glob
+import json
+import numpy
 
 def main():
 	folder = '../data/normalized/'
 	inputFolder = '../data/forged/'
-	sign = '008'
-	inputFile = '021' + sign +'_001.png'
+	sign = '002'
+	inputFile = sign + sign +'_000.png'
 
-	test_pre_classification_step()
+	img = cv.LoadImageM(folder + '../' + inputFile)
+	slant = getslant(img)
+	print "slant", slant
 
-	# img = cv.LoadImageM(inputFolder + inputFile)
-	# slant = getslant(img)
-	# print slant
+	second_stage_classification(folder + slant + '/', img)
 
 	# files = glob.glob(folder + slant + '/' + sign + sign + '.json')
 	# print len(files)
@@ -54,6 +56,32 @@ def test_pre_classification_step():
 		slant = getslant(img)
 		files = glob.glob(folder + slant + '/' + sign + sign + '.json')
 		print len(files)
+
+def second_stage_classification(subfolder, img):
+
+	dests = {}
+	fv = utils.calculateGloablFeatureVector(img)
+	for x in range(1,13):
+		toAdd = '00'
+		if x >= 10:
+			toAdd = '0'
+		files = glob.glob(subfolder + toAdd + str(x) +toAdd + str(x) + '.json')
+		if len(files) == 1:
+			FILE = open(files[0], 'r')
+			file_contents = FILE.read()
+			FILE.close()
+
+			gmfv = json.loads(file_contents)
+			dests[str(x)] = feature_space_distance(gmfv, fv)
+	
+	sorted_dests = sorted(dests.iteritems(), key=operator.itemgetter(1))
+	print sorted_dests
+
+def feature_space_distance(gmfv, fv):
+	a = numpy.array([gmfv['HtW'] ,gmfv['AtC'] ,gmfv['TtA'] ,gmfv['BtH'] ,gmfv['LtH'] ,gmfv['UtH']])
+	b = numpy.array([fv['HtW'] ,fv['AtC'] ,fv['TtA'] ,fv['BtH'] ,fv['LtH'] ,fv['UtH']])
+
+	return numpy.linalg.norm(a-b)
 
 if __name__ == '__main__':
 	main()

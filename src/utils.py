@@ -36,6 +36,7 @@ def main():
 
 
 	preclassification(outputFolder)
+	
 	sub_classes = ['PS', 'NS', 'HS', 'VS']
 	for slantness in sub_classes:
 		calculateMeanGlobalFeatureVector(outputFolder + slantness + '/')
@@ -95,7 +96,7 @@ def normalizationStep(inputFolder, outputFolder):
 		img = cv.LoadImageM(address)
 		img = toBinary(img)
 		gfv = calculateGloablFeatureVector(img)
-		img = resizeImage(img, mW, mH)
+		# img = resizeImage(img, mW, mH)
 
 		parts = address.split('\\')
 		destAddr = parts[len(parts)-1]

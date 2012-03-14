@@ -24,7 +24,7 @@ def main():
 	# cv.ShowImage("output",outputImg)
 	# cv.WaitKey(0)
 
-	normalizationStep(inputFolder, outputFolder)
+	# normalizationStep(inputFolder, outputFolder)
 
 	# img = cv.LoadImageM(outputFolder+inputFile)
 	# cv.ShowImage("input", img)
@@ -34,9 +34,14 @@ def main():
 	# cv.ShowImage("enhancedImage",enhancedImage)
 	# cv.WaitKey(0)
 
-
-	preclassification(outputFolder)
+	doPrepration()
 	
+def doPrepration():
+	inputFolder = '../data/'
+	outputFolder = '../data/normalized/'
+	normalizationStep(inputFolder, outputFolder)
+	preclassification(outputFolder)
+
 	sub_classes = ['PS', 'NS', 'HS', 'VS']
 	for slantness in sub_classes:
 		calculateMeanGlobalFeatureVector(outputFolder + slantness + '/')

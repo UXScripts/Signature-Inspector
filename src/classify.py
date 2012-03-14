@@ -7,16 +7,21 @@ import json
 import numpy
 
 def main():
+	f = '../data/'
 	folder = '../data/normalized/'
 	inputFolder = '../data/forged/'
-	sign = '002'
+	sign = '004'
 	inputFile = sign + sign +'_000.png'
 
-	img = cv.LoadImageM(folder + '../' + inputFile)
+	img = cv.LoadImageM(f + inputFile)
 	slant = getslant(img)
-	print "slant", slant
+	# print "slant", slant
 
-	second_stage_classification(folder + slant + '/', img)
+	# second_stage_classification(folder + slant + '/', img)
+
+
+	test_second_stage()
+
 
 	# files = glob.glob(folder + slant + '/' + sign + sign + '.json')
 	# print len(files)
@@ -28,14 +33,12 @@ def main():
 # returns a string such is 'PS'
 def getslant(img):
 	BiImg = utils.toBinary(img)
-	enhancedImage = utils.enhanceImage(BiImg)
-	cv.ShowImage("enhancedImage", enhancedImage)
-	enhancedBinaryImage = utils.toBinary(enhancedImage)
-	cv.ShowImage("enhancedBinaryImage", enhancedBinaryImage)
-	thinnedImage = features.thinning(enhancedBinaryImage)
-	cv.ShowImage("thinnedImage", thinnedImage)
+	# enhancedImage = utils.enhanceImage(BiImg)
+	# cv.ShowImage("enhancedImage", enhancedImage)
+	# enhancedBinaryImage = utils.toBinary(enhancedImage)
+	# cv.ShowImage("enhancedBinaryImage", enhancedBinaryImage)
 
-	slantFeature = features.slantFeature(thinnedImage)
+	slantFeature = features.slantFeature(BiImg)
 	sorted_slant = sorted(slantFeature.iteritems(), key=operator.itemgetter(1))
 	slantness = sorted_slant[len(sorted_slant)-1]
 	slant = slantness[0]
@@ -75,7 +78,24 @@ def second_stage_classification(subfolder, img):
 			dests[str(x)] = feature_space_distance(gmfv, fv)
 	
 	sorted_dests = sorted(dests.iteritems(), key=operator.itemgetter(1))
-	print sorted_dests
+	return sorted_dests
+
+def test_second_stage():
+	inputFolder = '../data/forged/'
+	folder = '../data/normalized/'
+
+	sign = '002'
+
+	print '-------'
+	print sign
+	inputFile = '021' + sign +'_000.png'
+	img = cv.LoadImageM(inputFolder + inputFile)
+	slant = getslant(img)
+	dests = second_stage_classification(folder + slant + '/', img)
+	print dests
+
+	
+
 
 def feature_space_distance(gmfv, fv):
 	a = numpy.array([gmfv['HtW'] ,gmfv['AtC'] ,gmfv['TtA'] ,gmfv['BtH'] ,gmfv['LtH'] ,gmfv['UtH']])

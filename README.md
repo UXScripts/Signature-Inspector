@@ -7,6 +7,7 @@ This is a Python-OpenCV implementation of a system that does offline signature r
 * Python 2.7
 * OpenCV 2.2
 * python interface for OpenCV
+* numpy
 
 ###The paper
 

@@ -35,8 +35,9 @@ def main():
 
 
 	# preclassification(outputFolder)
-
-	calculateMeanGlobalFeatureVector(outputFolder + 'PS/')
+	sub_classes = ['PS', 'NS', 'HS', 'VS']
+	for slantness in sub_classes:
+		calculateMeanGlobalFeatureVector(outputFolder + slantness + '/')
 
 def toBinary(img):
 	# convert to grayscale

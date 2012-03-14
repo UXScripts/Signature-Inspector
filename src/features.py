@@ -204,7 +204,7 @@ def thinning(img):
 	# this contains a list of CvPoints that are marked by sub iterations to be deleted
 	W, H = cv.GetSize(img)
 	i = 0
-	while i < 2:
+	while i < 1:
 		i += 1
 		marked = []
 		# sub-iteration 1

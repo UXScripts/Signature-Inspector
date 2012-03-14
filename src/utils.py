@@ -174,18 +174,14 @@ def calculateGloablFeatureVector(img):
 def calculateMeanGlobalFeatureVector(inputFolder):
 	import json
 	for x in range(1,13):
-		print '-------------------------------'
-		print x
 		toAdd = '00'
 		if x >= 10:
 			toAdd = '0'
 		
 		files = glob.glob(inputFolder + toAdd + str(x) + toAdd + str(x) + '_*.json')
 		if len(files) == 0:
-			print '0'
 			pass
 		elif len(files) == 1:
-			print '1'
 			import shutil
 			parts = files[0].split('\\')
 			destAddr = parts[len(parts)-1]
@@ -195,7 +191,6 @@ def calculateMeanGlobalFeatureVector(inputFolder):
 
 			shutil.copyfile(inputFolder + destAddr, inputFolder + toAdd + str(x) + toAdd + str(x) + '.json')
 		elif len(files) == 2:
-			print '2'
 			HtWs = []
 			AtCs = []
 			TtAs = []
@@ -225,7 +220,6 @@ def calculateMeanGlobalFeatureVector(inputFolder):
 			FILE.write(gmfv)
 			FILE.close()
 		else:
-			print len(files)
 			HtWs = []
 			AtCs = []
 			TtAs = []

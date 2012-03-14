@@ -1,6 +1,7 @@
 import cv
 import glob
 import operator
+import numpy
 
 def main():
 	inputFolder = '../data/'
@@ -182,14 +183,29 @@ def calculateMeanGlobalFeatureVector(inputFolder):
 		if len(files) == 0:
 			pass
 		elif len(files) == 1:
-			import shutil
 			parts = files[0].split('\\')
 			destAddr = parts[len(parts)-1]
 
 			parts = destAddr.split('.')
 			name = parts[0]
 
-			shutil.copyfile(inputFolder + destAddr, inputFolder + toAdd + str(x) + toAdd + str(x) + '.json')
+			FILE = open(files[0], 'r')
+			gfv = FILE.read()
+			FILE.close()
+			gfv = json.loads(gfv)
+
+			gfv['HtW_std'] = 0
+			gfv['AtC_std'] = 0
+			gfv['TtA_std'] = 0
+			gfv['BtH_std'] = 0
+			gfv['LtH_std'] = 0
+			gfv['UtH_std'] = 0
+
+			gfv = json.dumps(gfv)
+			FILE = open(inputFolder + toAdd + str(x) + toAdd + str(x) + '.json', 'w')
+			FILE.write(gfv)
+			FILE.close()
+
 		elif len(files) == 2:
 			HtWs = []
 			AtCs = []
@@ -209,6 +225,20 @@ def calculateMeanGlobalFeatureVector(inputFolder):
 				LtHs.append(gfv['LtH'])
 				UtHs.append(gfv['UtH'])
 			gmfv = {}
+
+			HtW_std = numpy.array(HtWs).std()
+			AtC_std = numpy.array(AtCs).std()
+			TtA_std = numpy.array(TtAs).std()
+			BtH_std = numpy.array(BtHs).std()
+			LtH_std = numpy.array(LtHs).std()
+			UtH_std = numpy.array(UtHs).std()
+			
+			gmfv['HtW_std'] = HtW_std
+			gmfv['AtC_std'] = AtC_std
+			gmfv['TtA_std'] = TtA_std
+			gmfv['BtH_std'] = BtH_std
+			gmfv['LtH_std'] = LtH_std
+			gmfv['UtH_std'] = UtH_std
 			gmfv['HtW'] = sum(HtWs)/float(len(HtWs))
 			gmfv['AtC'] = sum(AtCs)/float(len(AtCs))
 			gmfv['TtA'] = sum(TtAs)/float(len(TtAs))
@@ -238,6 +268,20 @@ def calculateMeanGlobalFeatureVector(inputFolder):
 				LtHs.append(gfv['LtH'])
 				UtHs.append(gfv['UtH'])
 			gmfv = {}
+
+			HtW_std = numpy.array(HtWs).std()
+			AtC_std = numpy.array(AtCs).std()
+			TtA_std = numpy.array(TtAs).std()
+			BtH_std = numpy.array(BtHs).std()
+			LtH_std = numpy.array(LtHs).std()
+			UtH_std = numpy.array(UtHs).std()
+			
+			gmfv['HtW_std'] = HtW_std
+			gmfv['AtC_std'] = AtC_std
+			gmfv['TtA_std'] = TtA_std
+			gmfv['BtH_std'] = BtH_std
+			gmfv['LtH_std'] = LtH_std
+			gmfv['UtH_std'] = UtH_std
 
 			max_HtW = max(HtWs)
 			max_AtC = max(AtCs)

@@ -1,5 +1,6 @@
 import cv
 import glob
+import operator
 
 def main():
 	inputFolder = '../data/'
@@ -12,9 +13,9 @@ def main():
 	# cv.ShowImage("output",outputImg)
 	# cv.WaitKey(0)
 
-	(w, h) = meanSizeOfSamples(inputFolder)
+	# (w, h) = meanSizeOfSamples(inputFolder)
 
-	print int(w), int(h)
+	# print int(w), int(h)
 
 	# img = cv.LoadImageM(inputFolder+inputFile)
 	# cv.ShowImage("input", img)
@@ -24,13 +25,16 @@ def main():
 
 	# normalizationStep(inputFolder, outputFolder)
 
-	img = cv.LoadImageM(outputFolder+inputFile)
-	cv.ShowImage("input", img)
-	outputImg = toBinary(img)
-	cv.ShowImage("binary",outputImg)
-	enhancedImage = enhanceImage(img)
-	cv.ShowImage("enhancedImage",enhancedImage)
-	cv.WaitKey(0)
+	# img = cv.LoadImageM(outputFolder+inputFile)
+	# cv.ShowImage("input", img)
+	# outputImg = toBinary(img)
+	# cv.ShowImage("binary",outputImg)
+	# enhancedImage = enhanceImage(img)
+	# cv.ShowImage("enhancedImage",enhancedImage)
+	# cv.WaitKey(0)
+
+
+	preclassification(outputFolder)
 
 def toBinary(img):
 	# convert to grayscale
@@ -98,6 +102,22 @@ def enhanceImage(img):
 	result = cv.CreateMat(H, W, cv.GetElemType(img))
 	cv.Smooth(img, result, smoothtype=cv.CV_BLUR, param1=3)
 	return result
+
+def preclassification(inputFolder):
+	import features
+
+	imgAddrs = glob.glob(inputFolder + '*_*.png')
+	for image in imgAddrs:
+		img = cv.LoadImageM(image)
+		img = toBinary(img)
+		parts = image.split('\\')
+		destAddr = parts[len(parts)-1]
+		slant = features.slantFeature(img)
+		sorted_slant = sorted(slant.iteritems(), key=operator.itemgetter(1))
+		slantFeature = sorted_slant[len(sorted_slant)-1]
+		folder = slantFeature[0]
+		
+		cv.SaveImage(inputFolder + folder + '/' + destAddr, img)
 
 if __name__ == '__main__':
 	main()

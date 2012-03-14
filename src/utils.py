@@ -23,7 +23,7 @@ def main():
 	# cv.ShowImage("output",outputImg)
 	# cv.WaitKey(0)
 
-	normalizationStep(inputFolder, outputFolder)
+	# normalizationStep(inputFolder, outputFolder)
 
 	# img = cv.LoadImageM(outputFolder+inputFile)
 	# cv.ShowImage("input", img)
@@ -34,7 +34,9 @@ def main():
 	# cv.WaitKey(0)
 
 
-	preclassification(outputFolder)
+	# preclassification(outputFolder)
+
+	calculateMeanGlobalFeatureVector(outputFolder + 'PS/')
 
 def toBinary(img):
 	# convert to grayscale
@@ -167,6 +169,106 @@ def calculateGloablFeatureVector(img):
 	UtH = float(H-U+1) / H
 
 	return {'HtW': HtW, 'AtC': AtC, 'TtA': TtA, 'BtH': BtH, 'LtH': LtH, 'UtH': UtH}
+
+def calculateMeanGlobalFeatureVector(inputFolder):
+	import json
+	for x in range(1,13):
+		print '-------------------------------'
+		print x
+		toAdd = '00'
+		if x >= 10:
+			toAdd = '0'
+		
+		files = glob.glob(inputFolder + toAdd + str(x) + toAdd + str(x) + '_*.json')
+		if len(files) == 0:
+			print '0'
+			pass
+		elif len(files) == 1:
+			print '1'
+			import shutil
+			parts = files[0].split('\\')
+			destAddr = parts[len(parts)-1]
+
+			parts = destAddr.split('.')
+			name = parts[0]
+
+			shutil.copyfile(inputFolder + destAddr, inputFolder + toAdd + str(x) + toAdd + str(x) + '.json')
+		elif len(files) == 2:
+			print '2'
+			HtWs = []
+			AtCs = []
+			TtAs = []
+			BtHs = []
+			LtHs = []
+			UtHs = []
+			for f in files:
+				FILE = open(f, 'r')
+				gfv = FILE.read()
+				FILE.close()
+				gfv = json.loads(gfv)
+				HtWs.append(gfv['HtW'])
+				AtCs.append(gfv['AtC'])
+				TtAs.append(gfv['TtA'])
+				BtHs.append(gfv['BtH'])
+				LtHs.append(gfv['LtH'])
+				UtHs.append(gfv['UtH'])
+			gmfv = {}
+			gmfv['HtW'] = sum(HtWs)/float(len(HtWs))
+			gmfv['AtC'] = sum(AtCs)/float(len(AtCs))
+			gmfv['TtA'] = sum(TtAs)/float(len(TtAs))
+			gmfv['BtH'] = sum(BtHs)/float(len(BtHs))
+			gmfv['LtH'] = sum(LtHs)/float(len(LtHs))
+			gmfv['UtH'] = sum(UtHs)/float(len(UtHs))
+			gmfv = json.dumps(gmfv)
+			FILE = open(inputFolder + toAdd + str(x) + toAdd + str(x) + '.json', 'w')
+			FILE.write(gmfv)
+			FILE.close()
+		else:
+			print len(files)
+			HtWs = []
+			AtCs = []
+			TtAs = []
+			BtHs = []
+			LtHs = []
+			UtHs = []
+			for f in files:
+				FILE = open(f, 'r')
+				gfv = FILE.read()
+				FILE.close()
+				gfv = json.loads(gfv)
+				HtWs.append(gfv['HtW'])
+				AtCs.append(gfv['AtC'])
+				TtAs.append(gfv['TtA'])
+				BtHs.append(gfv['BtH'])
+				LtHs.append(gfv['LtH'])
+				UtHs.append(gfv['UtH'])
+			gmfv = {}
+
+			max_HtW = max(HtWs)
+			max_AtC = max(AtCs)
+			max_TtA = max(TtAs)
+			max_BtH = max(BtHs)
+			max_LtH = max(LtHs)
+			max_UtH = max(UtHs)
+
+			min_HtW = min(HtWs)
+			min_AtC = min(AtCs)
+			min_TtA = min(TtAs)
+			min_BtH = min(BtHs)
+			min_LtH = min(LtHs)
+			min_UtH = min(UtHs)
+
+			gmfv['HtW'] = (sum(HtWs) - min_HtW - max_HtW)/float(len(files)-2)
+			gmfv['AtC'] = (sum(AtCs) - min_AtC - max_AtC)/float(len(files)-2)
+			gmfv['TtA'] = (sum(TtAs) - min_TtA - max_TtA)/float(len(files)-2)
+			gmfv['BtH'] = (sum(BtHs) - min_BtH - max_BtH)/float(len(files)-2)
+			gmfv['LtH'] = (sum(LtHs) - min_LtH - max_LtH)/float(len(files)-2)
+			gmfv['UtH'] = (sum(UtHs) - min_UtH - max_UtH)/float(len(files)-2)
+
+			gmfv = json.dumps(gmfv)
+			FILE = open(inputFolder + toAdd + str(x) + toAdd + str(x) + '.json', 'w')
+			FILE.write(gmfv)
+			FILE.close()
 
 if __name__ == '__main__':
 	main()

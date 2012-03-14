@@ -1,9 +1,9 @@
 import cv
-import utils
 import math
 import operator
 
 def main():
+	import utils
 	inputFolder = '../data/normalized/'
 	inputFile = '012012_001.png'
 
